@@ -3,7 +3,6 @@
 # Description: printing info about input numbers
 # Input: numbers by the user until '0'
 # Output: different info about the input number
-
 ################# Data segment #####################
 .data
 space: .asciiz " "
@@ -66,16 +65,18 @@ print_c:
 	la $a0,space		#loads space to $a0
 	syscall		
 	
-d:	#add $t5,$t5,$zero	#zero out $t5
-	ble $t4,$t5,wrong	#if $t4 is smaller than $t5 it goes to 'wrong'
+d:	beq $t5,$zero,pre
+	addi $t6,$t5,1		#sets $t6 as $t5 (the prior loop '1' counter) + '1'
+	bne $t4,$t6,wrong
+
 ok:	li $v0,4		#prints string in $a0
 	la $a0,ans1		#stores the ans1 address to $a0
 	syscall
 
+pre:	#a label for the first number which doesnt print ok\wrong
 	move $t5,$t4		#stores $t4 (the amount of '1's) to $t5
 	j main			#returns to the start of the over loop
-	
-					
+				
 exit:	li $v0, 10		# Exit program
 	syscall
 
@@ -83,4 +84,4 @@ wrong:	#this label is after "exit" because there's a chance it won't be used at 
 	li $v0,4		#prints string in $a0
 	la $a0,ans2		#stores the ans2 address to $a0
 	syscall
-	j main			#returns to the start of the main "loop"
+	j pre			#returns to the pre label
